@@ -351,3 +351,80 @@ If you find this project useful, please give it a ⭐ star on GitHub!
 
 *Empowering businesses with AI-driven decision making*
 # multi-agent-AI-platform-and-mcp
+
+Status: Work-in-progress (state captured: 2026-05-06)
+
+This repository contains a prototype multi-agent AI platform with an MCP (Model Context Protocol) handshake and a local tools registry. The project combines a Next.js frontend with a Node/TypeScript backend that exposes a WebSocket agent runtime and a set of server-side tools (repo search, file read/write, git helpers, LLM invocation, snippet saving).
+
+Key features implemented so far
+- Next.js (App Router) frontend for admin UI and editor pages
+- WebSocket backend server for agent/browser communication (`server/websocket/*`)
+- Centralized Tool Registry (`server/utils/toolRegistry.ts`) with built-in tools (search_repo, read_file, write_file, git_*, save_snippet, invoke_llm)
+- Agent token authentication and MCP handshake endpoint (`app/api/mcp/handshake/route.ts`)
+- Admin API to assign tools to agents (`app/api/admin/agents/[agentId]/tools/route.ts`)
+- Session → Conversation → Message persistence (SQLite primary; JSON fallback for local dev) (`server/db/database.ts`)
+- Scripts to simulate agent interactions and tests (`scripts/test_ws.js`, `scripts/ws_agent_test.js`, `scripts/mcp_handshake_sim.js`)
+
+Important notes (as-is)
+- The server supports a JSON fallback DB when native `better-sqlite3` bindings are absent — useful for local development.
+- The MCP handshake endpoint requires the header `x-mcp-key` set to `MCP_SHARED_SECRET` (or `ADMIN_API_KEY`) defined in `.env`.
+- Tool access is controlled per-agent via `agent_tools` mappings in the DB. Use the admin API to assign or update tools.
+
+Quick start (local development)
+
+1) Install dependencies
+
+```bash
+pnpm install
+```
+
+2) Start Next.js frontend (dev)
+
+```bash
+pnpm dev
+```
+
+3) Start the backend WebSocket server (separate terminal)
+
+```bash
+ADMIN_API_KEY=admin-secret MCP_SHARED_SECRET=admin-secret WEBSOCKET_PORT=3001 npx ts-node -r tsconfig-paths/register --project tsconfig.server.json server/index.ts
+```
+
+4) Create an agent token + session (MCP handshake)
+
+```bash
+curl -X POST http://localhost:3000/api/mcp/handshake \
+	-H "x-mcp-key: $MCP_SHARED_SECRET" \
+	-H "Content-Type: application/json" \
+	-d '{"agentId":"techAgent","name":"sim-test","title":"E2E session"}'
+```
+
+5) Use test scripts to authenticate and call tools (example)
+
+```bash
+node scripts/ws_agent_test.js ws://localhost:3002 <AGENT_TOKEN>
+```
+
+Where `scripts/ws_agent_test.js` will authenticate with `agent_auth` and call `search_repo` (see script for details).
+
+Developer details / file map
+
+- Frontend: `app/` (Next.js App router)
+- Server entry: `server/index.ts`
+- WebSocket: `server/websocket/` (server.ts + handlers.ts)
+- DB: `server/db/database.ts` (better-sqlite3 primary; JSON fallback available)
+- Tool registry: `server/utils/toolRegistry.ts`
+- Agent auth helpers: `server/agents/auth.ts`
+- MCP handshake: `app/api/mcp/handshake/route.ts`
+- Admin tools API: `app/api/admin/agents/[agentId]/tools/route.ts`
+- Scripts: `scripts/` (simple test clients and simulators)
+
+Known caveats and next steps
+- Native `better-sqlite3` requires a compiled native binding; the JSON fallback is used when not available.
+- Turbopack may trace filesystem calls; avoid dynamic runtime fs calls in server-side imports used by Next.js routes.
+- Security: admin endpoints require `ADMIN_API_KEY`; for production review RBAC, rate-limits, and logging.
+
+If you want, I can now commit these docs, add a LICENSE and `.gitignore`, and push to the configured remote repository exactly as requested.
+
+----
+_Snapshot created automatically by the local development assistant._
