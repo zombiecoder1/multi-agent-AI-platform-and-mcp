@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI বোর্ড সিস্টেম - বিশ্লেষণ রিপোর্ট</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', 'Noto Sans Bengali', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.8;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .section {
+            margin-bottom: 35px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .section h2 {
+            color: #667eea;
+            font-size: 1.6em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section p, .section li {
+            color: #444;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+        
+        .agent-card {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .agent-avatar {
+            font-size: 2em;
+        }
+        
+        .agent-info h4 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .agent-info p {
+            color: #666;
+            font-size: 0.95em;
+        }
+        
+        .problem-box {
+            background: #ffe6e6;
+            border-left-color: #e74c3c;
+        }
+        
+        .problem-box h2 {
+            color: #e74c3c;
+        }
+        
+        .solution-box {
+            background: #e6ffe6;
+            border-left-color: #27ae60;
+        }
+        
+        .solution-box h2 {
+            color: #27ae60;
+        }
+        
+        .info-box {
+            background: #e6f3ff;
+            border-left-color: #3498db;
+        }
+        
+        .info-box h2 {
+            color: #3498db;
+        }
+        
+        .flow-diagram {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .flow-box {
+            display: inline-block;
+            padding: 15px 25px;
+            margin: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+        
+        .arrow {
+            font-size: 2em;
+            color: #667eea;
+            margin: 10px 0;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin: 5px;
+        }
+        
+        .status-good {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-bad {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        ul {
+            margin-left: 25px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+        
+        .emoji {
+            font-size: 1.3em;
+        }
+        
+        .highlight {
+            background: yellow;
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        
+        .footer {
+            background: #f8f9fa;
+            padding: 30px;
+            text-align: center;
+            color: #666;
+            border-top: 2px solid #e9ecef;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            .content {
+                padding: 20px;
+            }
+            .section {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI বোর্ড সিস্টেম বিশ্লেষণ</h1>
+            <p>বর্তমান অবস্থা এবং সমাধানের পথ</p>
+        </div>
+        
+        <div class="content">
+            <!-- পরিচিতি -->
+            <div class="section info-box">
+                <h2><span class="emoji">📋</span> সিস্টেমটি কী এবং কীভাবে কাজ করে?</h2>
+                <p>এই সিস্টেমটি একটি <strong>মাল্টি-এজেন্ট AI বোর্ড</strong>। মানে হলো, আপনি একটি প্রশ্ন করলে <span class="highlight">৫ জন ভিন্ন বিশেষজ্ঞ AI এজেন্ট</span> একসাথে উত্তর দেয়!</p>
+                
+                <div style="margin-top: 20px;">
+                    <div class="agent-card">
+                        <span class="agent-avatar">👨‍💼</span>
+                        <div class="agent-info">
+                            <h4>মার্কেটিং এজেন্ট</h4>
+                            <p>ব্র্যান্ডিং, মার্কেটিং স্ট্র্যাটেজি বিশেষজ্ঞ</p>
+                        </div>
+                    </div>
+                    <div class="agent-card">
+                        <span class="agent-avatar">👨‍💻</span>
+                        <div class="agent-info">
+                            <h4>টেক এজেন্ট</h4>
+                            <p>সফটওয়্যার ডেভেলপমেন্ট, সিস্টেম ডিজাইন বিশেষজ্ঞ</p>
+                        </div>
+                    </div>
+                    <div class="agent-card">
+                        <span class="agent-avatar">👩‍💼</span>
+                        <div class="agent-info">
+                            <h4>HR এজেন্ট</h4>
+                            <p>হিউম্যান রিসোর্স, টিম ম্যানেজমেন্ট বিশেষজ্ঞ</p>
+                        </div>
+                    </div>
+                    <div class="agent-card">
+                        <span class="agent-avatar">🤖</span>
+                        <div class="agent-info">
+                            <h4>AI এজেন্ট</h4>
+                            <p>মেশিন লার্নিং, AI টেকনোলজি বিশেষজ্ঞ</p>
+                        </div>
+                    </div>
+                    <div class="agent-card">
+                        <span class="agent-avatar">😏</span>
+                        <div class="agent-info">
+                            <h4>সারকাজম এজেন্ট</h4>
+                            <p>রিয়ালিটি চেক, সমালোচনামূলক বিশ্লেষণ বিশেষজ্ঞ</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- কাজের প্রক্রিয়া -->
+            <div class="section">
+                <h2><span class="emoji">⚙️</span> কীভাবে কাজ করে?</h2>
+                <div class="flow-diagram">
+                    <div class="flow-box">আপনার প্রশ্ন ❓</div>
+                    <div class="arrow">⬇️</div>
+                    <div class="flow-box">WebSocket সার্ভার 📡</div>
+                    <div class="arrow">⬇️</div>
+                    <div class="flow-box">৫ এজেন্ট আলাদাভাবে চিন্তা 🤔</div>
+                    <div class="arrow">⬇️</div>
+                    <div class="flow-box">Ollama AI মডেল 🧠</div>
+                    <div class="arrow">⬇️</div>
+                    <div class="flow-box">রিয়েল-টাইম উত্তর স্ট্রিম 📺</div>
+                    <div class="arrow">⬇️</div>
+                    <div class="flow-box">সেরা উত্তর নির্বাচন 🏆</div>
+                </div>
+                <p style="text-align: center; color: #666; margin-top: 15px;">
+                    প্রতিটি এজেন্ট একই প্রশ্নের আলাদা আলাদা উত্তর দেয় এবং স্কোরিং সিস্টেম সেরাটি বেছে নেয়!
+                </p>
+            </div>
+            
+            <!-- ভালো দিক -->
+            <div class="section solution-box">
+                <h2><span class="emoji">✅</span> কী কী ভালো কাজ করছে?</h2>
+                <ul>
+                    <li><span class="status-badge status-good">WebSocket Connected</span> রিয়েল-টাইম সংযোগ ঠিক আছে</li>
+                    <li><span class="status-badge status-good">Streaming Working</span> উত্তর chunk-by-chunk আসছে</li>
+                    <li><span class="status-badge status-good">Database Active</span> SQLite ডাটাবেস ঠিকমতো কাজ করছে</li>
+                    <li><span class="status-badge status-good">5 Agents Loaded</span> সব এজেন্ট লোড হয়েছে</li>
+                    <li><span class="status-badge status-good">Session Tracking</span> কনভারসেশন সেভ হচ্ছে</li>
+                </ul>
+            </div>
+            
+            <!-- সমস্যা -->
+            <div class="section problem-box">
+                <h2><span class="emoji">❌</span> কী কী সমস্যা আছে?</h2>
+                
+                <h3 style="color: #e74c3c; margin: 20px 0 10px 0;">🎭 সমস্যা ১: এজেন্টের চরিত্র (Persona) ঠিকমতো কাজ করছে না</h3>
+                <p>প্রতিটি এজেন্টের একটা <strong>"ব্যক্তিত্ব"</strong> বা চরিত্র থাকার কথা:</p>
+                <ul>
+                    <li>মার্কেটিং এজেন্টের মার্কেটিং স্টাইলে কথা বলা উচিত</li>
+                    <li>টেক এজেন্টের টেকনিক্যাল ভাষায় কথা বলা উচিত</li>
+                    <li>সব এজেন্টের বাংলা-ইংলিশ মিক্সড ভাষায় কথা বলা উচিত</li>
+                </ul>
+                <p><strong>কিন্তু বাস্তবে:</strong> সব এজেন্ট একই রকম সাধারণ ভাষায় উত্তর দিচ্ছে! কারণ:</p>
+                <ul>
+                    <li><span class="status-badge status-bad">ছোট AI মডেল</span> ব্যবহার হচ্ছে - <code>gemma2:2b</code> (২ বিলিয়ন প্যারামিটার)</li>
+                    <li>ছোট মডেলগুলো জটিল "চরিত্র" বুঝতে এবং অনুসরণ করতে পারে না</li>
+                    <li>সব এজেন্ট একই মডেল ব্যবহার করছে, তাই সব একই রকম!</li>
+                </ul>
+                
+                <h3 style="color: #e74c3c; margin: 20px 0 10px 0;">💬 সমস্যা ২: ইতিহাস (History) মনে রাখছে না</h3>
+                <p>আপনি যদি বলেন <em>"আমার নাম রহিম"</em>, তারপর জিজ্ঞেস করেন <em>"আমার নাম কী?"</em> - এজেন্ট জানতে পারবে না!</p>
+                <p><strong>কারণ:</strong> প্রতিটি প্রশ্ন নতুন করে প্রক্রিয়া হয়, আগের কথা মনে রাখার সিস্টেমে বাগ আছে।</p>
+                
+                <h3 style="color: #e74c3c; margin: 20px 0 10px 0;">🐌 সমস্যা ৩: ধীর গতি</h3>
+                <p>লোকাল কম্পিউটারে AI মডেল চালানো হচ্ছে বলে:</p>
+                <ul>
+                    <li>উত্তর আসতে সময় লাগছে</li>
+                    <li>৫টি এজেন্ট একসাথে চালাতে কম্পিউটার চাপে পড়ছে</li>
+                    <li>ছোট মডেল হওয়ায় উত্তরের মানও কম</li>
+                </ul>
+            </div>
+            
+            <!-- সমাধান -->
+            <div class="section solution-box">
+                <h2><span class="emoji">💡</span> সমাধান কী হতে পারে?</h2>
+                
+                <h3 style="color: #27ae60; margin: 20px 0 10px 0;">১. বড় AI মডেল ব্যবহার করুন</h3>
+                <p>বর্তমান: <code>gemma2:2b</code> (২B = ২ বিলিয়ন)</p>
+                <p>পরামর্শ:</p>
+                <ul>
+                    <li><code>llama3:8b</code> (৮ বিলিয়ন) - অনেক ভালো কাজ করবে</li>
+                    <li><code>mistral:7b</code> (৭ বিলিয়ন) - দ্রুত এবং ভালো</li>
+                    <li><code>qwen3:14b</code> (১৪ বিলিয়ন) - বাংলাতে খুব ভালো</li>
+                </ul>
+                
+                <h3 style="color: #27ae60; margin: 20px 0 10px 0;">২. Gemini API ব্যবহার করুন</h3>
+                <p><code>.env</code> ফাইলে ইতোমধ্যে Gemini API কী আছে:</p>
+                <div style="background: #f4f4f4; padding: 15px; border-radius: 8px; margin: 10px 0; font-family: monospace;">
+                    AI_PROVIDER=gemini<br>
+                    GEMINI_MODEL=gemini-flash-latest
+                </div>
+                <p>এটা চালু করলে Google-এর শক্তিশালী AI ব্যবহার হবে, persona অনেক ভালো কাজ করবে!</p>
+                
+                <h3 style="color: #27ae60; margin: 20px 0 10px 0;">৩. প্রতি এজেন্টে আলাদা মডেল</h3>
+                <p>টেক এজেন্টের জন্য <code>codellama</code>, অন্যদের জন্য <code>llama3</code> - এভাবে ভাগ করলে আরও ভালো!</p>
+                
+                <h3 style="color: #27ae60; margin: 20px 0 10px 0;">৪. হিস্টরি বাগ ফিক্স</h3>
+                <p>প্রোগ্রামিং কোডে একটা ছোট জায়গায় ঠিক করতে হবে যাতে এজেন্ট আগের কথা মনে রাখতে পারে।</p>
+            </div>
+            
+            <!-- সারসংক্ষেপ -->
+            <div class="section" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);">
+                <h2><span class="emoji">📊</span> সারসংক্ষেপ</h2>
+                <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                    <tr style="background: white;">
+                        <td style="padding: 12px; border: 1px solid #ddd;"><strong>বিষয়</strong></td>
+                        <td style="padding: 12px; border: 1px solid #ddd;"><strong>বর্তমান অবস্থা</strong></td>
+                        <td style="padding: 12px; border: 1px solid #ddd;"><strong>মান</strong></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px; border: 1px solid #ddd;">সংযোগ (Connection)</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">WebSocket সচল</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;"><span class="status-badge status-good">ভালো ✅</span></td>
+                    </tr>
+                    <tr style="background: white;">
+                        <td style="padding: 12px; border: 1px solid #ddd;">রিয়েল-টাইম স্ট্রিমিং</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">কাজ করছে</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;"><span class="status-badge status-good">ভালো ✅</span></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px; border: 1px solid #ddd;">ডাটাবেস</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">SQLite ঠিক আছে</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;"><span class="status-badge status-good">ভালো ✅</span></td>
+                    </tr>
+                    <tr style="background: white;">
+                        <td style="padding: 12px; border: 1px solid #ddd;">Persona/চরিত্র</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">ছোট মডেলের জন্য ঠিক নয়</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;"><span class="status-badge status-warning">মোটামুটি ⚠️</span></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px; border: 1px solid #ddd;">মেমরি/ইতিহাস</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">বাগ আছে</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;"><span class="status-badge status-bad">সমস্যা ❌</span></td>
+                    </tr>
+                    <tr style="background: white;">
+                        <td style="padding: 12px; border: 1px solid #ddd;">গতি</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">লোকাল মডেল - ধীর</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;"><span class="status-badge status-warning">মোটামুটি ⚠️</span></td>
+                    </tr>
+                </table>
+            </div>
+            
+            <!-- পরামর্শ -->
+            <div class="section" style="background: #fff9e6; border-left-color: #f39c12;">
+                <h2 style="color: #f39c12;"><span class="emoji">🎯</span> আমার পরামর্শ</h2>
+                <ol style="margin-left: 25px; font-size: 1.1em;">
+                    <li style="margin-bottom: 15px;">
+                        <strong>দ্রুত ফলাফলের জন্য:</strong><br>
+                        <code>.env</code> ফাইলে <code>AI_PROVIDER=gemini</code> করে দিন। Google-এর শক্তিশালী AI ব্যবহার করুন।
+                    </li>
+                    <li style="margin-bottom: 15px;">
+                        <strong>লোকাল রাখতে চাইলে:</strong><br>
+                        Ollama-তে <code>ollama pull llama3:8b</code> দিয়ে বড় মডেল ডাউনলোড করুন।
+                    </li>
+                    <li style="margin-bottom: 15px;">
+                        <strong>Persona ভালো করতে:</strong><br>
+                        সিস্টেম প্রম্পটগুলো আরও শক্তিশালী করে লিখতে হবে।
+                    </li>
+                    <li>
+                        <strong>মেমরি ফিক্স:</strong><br>
+                        কোডে ছোট একটা পরিবর্তন করলে এজেন্ট আগের কথা মনে রাখবে।
+                    </li>
+                </ol>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p style="font-size: 1.2em; margin-bottom: 10px;">💻 তৈরি করেছেন: AI বোর্ড সিস্টেম বিশ্লেষণ টিম</p>
+            <p style="font-size: 0.9em;">এই রিপোর্ট সিস্টেমের বর্তমান অবস্থা অনুযায়ী তৈরি</p>
+            <p style="margin-top: 15px; color: #999;">📅 তৈরির তারিখ: এপ্রিল ২০২৬</p>
+        </div>
+    </div>
+</body>
+</html>

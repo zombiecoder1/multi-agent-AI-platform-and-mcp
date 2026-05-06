@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ZombieCoder AI Board — প্রজেক্ট স্ট্যাটাস রিপোর্ট</title>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0d14;
+      --surface: #111520;
+      --surface2: #161b2a;
+      --border: #1e2740;
+      --accent: #00e5ff;
+      --accent2: #7c3aed;
+      --green: #10b981;
+      --yellow: #f59e0b;
+      --red: #ef4444;
+      --orange: #f97316;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --heading-font: 'Rajdhani', sans-serif;
+      --body-font: 'Hind Siliguri', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--body-font);
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: linear-gradient(135deg, #0f1629 0%, #1a0a2e 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 2rem 2rem 1.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% -20%, rgba(0,229,255,0.12) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .logo-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .75rem;
+      margin-bottom: .75rem;
+    }
+    .logo-icon {
+      width: 48px; height: 48px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+      box-shadow: 0 0 20px rgba(0,229,255,0.3);
+    }
+    header h1 {
+      font-family: var(--heading-font);
+      font-size: 2.2rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--accent), #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 1px;
+    }
+    .subtitle {
+      color: var(--muted);
+      font-size: .9rem;
+      margin-top: .25rem;
+    }
+    .meta-row {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+    .meta-chip {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: .25rem .75rem;
+      font-size: .78rem;
+      color: var(--muted);
+    }
+    .meta-chip span { color: var(--accent); }
+
+    /* ── LAYOUT ── */
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    /* ── SECTION CARD ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      padding: 1.1rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface2);
+    }
+    .card-icon {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.15rem;
+      flex-shrink: 0;
+    }
+    .card-header h2 {
+      font-family: var(--heading-font);
+      font-size: 1.15rem;
+      font-weight: 600;
+      letter-spacing: .5px;
+    }
+    .card-body {
+      padding: 1.5rem;
+    }
+
+    /* ── STATUS GRID ── */
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+    .status-item {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+    }
+    .status-item .label {
+      font-size: .78rem;
+      color: var(--muted);
+      margin-bottom: .3rem;
+    }
+    .status-item .value {
+      font-weight: 600;
+      font-size: .95rem;
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+    }
+    .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .dot-green  { background: var(--green);  box-shadow: 0 0 6px var(--green); }
+    .dot-yellow { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); }
+    .dot-red    { background: var(--red);    box-shadow: 0 0 6px var(--red); }
+
+    /* ── FEATURE TABLE ── */
+    .feature-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .feature-table th {
+      background: var(--surface2);
+      padding: .7rem 1rem;
+      text-align: left;
+      font-size: .8rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+    .feature-table td {
+      padding: .75rem 1rem;
+      border-top: 1px solid var(--border);
+      font-size: .9rem;
+      vertical-align: top;
+    }
+    .feature-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .badge {
+      display: inline-block;
+      padding: .15rem .6rem;
+      border-radius: 20px;
+      font-size: .73rem;
+      font-weight: 600;
+      letter-spacing: .3px;
+    }
+    .badge-done    { background: rgba(16,185,129,.15); color: #34d399; border: 1px solid rgba(16,185,129,.3); }
+    .badge-partial { background: rgba(245,158,11,.15); color: #fbbf24; border: 1px solid rgba(245,158,11,.3); }
+    .badge-missing { background: rgba(239,68,68,.15);  color: #f87171; border: 1px solid rgba(239,68,68,.3); }
+
+    /* ── REQUIREMENT LIST ── */
+    .req-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: .75rem;
+    }
+    .req-list li {
+      display: flex;
+      gap: .8rem;
+      align-items: flex-start;
+      padding: .85rem 1rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+    .req-num {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #000;
+      font-weight: 700;
+      font-size: .78rem;
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      margin-top: .1rem;
+    }
+    .req-title { font-weight: 600; color: var(--accent); font-size: .92rem; }
+    .req-desc  { font-size: .86rem; color: var(--muted); margin-top: .15rem; }
+
+    /* ── CAPABILITY GRID ── */
+    .cap-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1rem;
+    }
+    .cap-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.1rem;
+      transition: border-color .2s;
+    }
+    .cap-card:hover { border-color: var(--accent); }
+    .cap-card .cap-icon { font-size: 1.6rem; margin-bottom: .5rem; }
+    .cap-card .cap-title { font-weight: 600; font-size: .95rem; margin-bottom: .3rem; color: #c4b5e8; }
+    .cap-card .cap-body  { font-size: .83rem; color: var(--muted); line-height: 1.6; }
+
+    /* ── COMMENT BLOCK ── */
+    .comment-block {
+      background: linear-gradient(135deg, rgba(0,229,255,.05), rgba(124,58,237,.05));
+      border: 1px solid rgba(0,229,255,.2);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      position: relative;
+    }
+    .comment-block::before {
+      content: '"';
+      position: absolute;
+      top: -10px; left: 16px;
+      font-size: 3rem;
+      color: var(--accent);
+      opacity: .3;
+      font-family: Georgia, serif;
+    }
+    .comment-block p { font-size: .9rem; margin-bottom: .6rem; }
+    .comment-block p:last-child { margin-bottom: 0; }
+
+    /* ── WARN BOX ── */
+    .warn-box {
+      display: flex;
+      gap: .75rem;
+      background: rgba(245,158,11,.08);
+      border: 1px solid rgba(245,158,11,.3);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      font-size: .875rem;
+    }
+    .warn-box .warn-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: .1rem; }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: .8rem;
+    }
+    footer strong { color: var(--accent); }
+
+    /* ── PULSE ANIMATION ── */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: .5; }
+    }
+    .pulse { animation: pulse 2s infinite; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.6rem; }
+      .status-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo-row">
+    <div class="logo-icon">🧠</div>
+    <div>
+      <h1>ZombieCoder AI Board</h1>
+    </div>
+  </div>
+  <p class="subtitle">প্রজেক্ট স্ট্যাটাস, চাহিদা বিশ্লেষণ ও AI সক্ষমতা রিপোর্ট</p>
+  <div class="meta-row">
+    <span class="meta-chip">মালিক: <span>Sahon Srabon</span></span>
+    <span class="meta-chip">Developer Zone — <span>Dhaka, Bangladesh</span></span>
+    <span class="meta-chip">তারিখ: <span>১৪ এপ্রিল ২০২৬</span></span>
+    <span class="meta-chip">Stack: <span>Next.js 15 + TypeScript + SQLite</span></span>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- ═══ SECTION 1: বর্তমান অবস্থা ═══ -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon" style="background:rgba(16,185,129,.15);">📊</div>
+      <h2>১. বর্তমান অবস্থা (Current State) — যেমন আছে ঠিক তেমন</h2>
+    </div>
+    <div class="card-body">
+
+      <div class="status-grid" style="margin-bottom:1.5rem;">
+        <div class="status-item">
+          <div class="label">Frontend Server</div>
+          <div class="value"><span class="dot dot-green pulse"></span> চলছে (port 3000)</div>
+        </div>
+        <div class="status-item">
+          <div class="label">WebSocket Server</div>
+          <div class="value"><span class="dot dot-green pulse"></span> চলছে (port 3001)</div>
+        </div>
+        <div class="status-item">
+          <div class="label">AI Provider</div>
+          <div class="value"><span class="dot dot-yellow"></span> Ollama (gemma2:2b)</div>
+        </div>
+        <div class="status-item">
+          <div class="label">Database</div>
+          <div class="value"><span class="dot dot-green"></span> SQLite (better-sqlite3)</div>
+        </div>
+        <div class="status-item">
+          <div class="label">Gemini API</div>
+          <div class="value"><span class="dot dot-yellow"></span> কনফিগ আছে, ব্যবহার নেই</div>
+        </div>
+        <div class="status-item">
+          <div class="label">Framework</div>
+          <div class="value"><span class="dot dot-green"></span> Next.js 15 / React 19</div>
+        </div>
+      </div>
+
+      <table class="feature-table">
+        <thead>
+          <tr>
+            <th>ফিচার</th>
+            <th>অবস্থা</th>
+            <th>বিস্তারিত</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Multi-Agent System (৫টি)</td>
+            <td><span class="badge badge-done">✅ আছে</span></td>
+            <td>Marketing, Tech, HR, AI, Sarcasm — সবই হার্ডকোড করা registry.ts-এ</td>
+          </tr>
+          <tr>
+            <td>WebSocket Streaming</td>
+            <td><span class="badge badge-done">✅ আছে</span></td>
+            <td>Real-time chunk streaming কাজ করছে</td>
+          </tr>
+          <tr>
+            <td>Session Management</td>
+            <td><span class="badge badge-partial">⚠️ আংশিক</span></td>
+            <td>Session ID তৈরি হয়, কিন্তু session resume / reload করার কোনো UI নেই</td>
+          </tr>
+          <tr>
+            <td>Meeting Mode</td>
+            <td><span class="badge badge-partial">⚠️ আংশিক</span></td>
+            <td>বাটন আছে, কিন্তু meeting-এর কোনো পৃথক identity বা state persistence নেই</td>
+          </tr>
+          <tr>
+            <td>Conversation History</td>
+            <td><span class="badge badge-partial">⚠️ আংশিক</span></td>
+            <td>DB-তে সেভ হয়, কিন্তু UI-তে পুরানো conversation দেখার কোনো উপায় নেই</td>
+          </tr>
+          <tr>
+            <td>Model Selection Page</td>
+            <td><span class="badge badge-missing">❌ নেই</span></td>
+            <td>Ollama বা Gemini model select করার কোনো UI পেজ নেই</td>
+          </tr>
+          <tr>
+            <td>Settings Page</td>
+            <td><span class="badge badge-missing">❌ নেই</span></td>
+            <td>Admin বাটন আছে, কিন্তু পূর্ণ settings পেজ অনুপস্থিত</td>
+          </tr>
+          <tr>
+            <td>Agent Persona Page</td>
+            <td><span class="badge badge-missing">❌ নেই</span></td>
+            <td>Agent গুলো কাস্টমাইজ করার কোনো admin UI নেই</td>
+          </tr>
+          <tr>
+            <td>Bangla Voice (TTS)</td>
+            <td><span class="badge badge-partial">⚠️ আংশিক</span></td>
+            <td>Browser-এর Web Speech API ব্যবহার হচ্ছে — বাংলা শুনতে যায় না স্বাভাবিকভাবে</td>
+          </tr>
+          <tr>
+            <td>Speaking Indicator (Light)</td>
+            <td><span class="badge badge-missing">❌ নেই</span></td>
+            <td>কে বলছে তার কোনো visual indicator নেই</td>
+          </tr>
+          <tr>
+            <td>ZombieCoder Branding</td>
+            <td><span class="badge badge-missing">❌ নেই</span></td>
+            <td>me.txt-এর identity/branding কোথাও apply হয়নি</td>
+          </tr>
+          <tr>
+            <td>Bangladesh Market Focus</td>
+            <td><span class="badge badge-partial">⚠️ আংশিক</span></td>
+            <td>বাংলা prompt আছে কিন্তু BD-specific context system prompt-এ নেই</td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+
+  <!-- ═══ SECTION 2: চাহিদা ═══ -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon" style="background:rgba(124,58,237,.15);">🎯</div>
+      <h2>২. আপনার চাহিদা (Requirements) — me.txt থেকে বিশ্লেষণ</h2>
+    </div>
+    <div class="card-body">
+      <ul class="req-list">
+        <li>
+          <div class="req-num">১</div>
+          <div>
+            <div class="req-title">Meeting = Session + Multiple Conversations</div>
+            <div class="req-desc">একটি মিটিং মানে একটি সেশন, আর সেই সেশনে একাধিক কনভারসেশন/রাউন্ড হবে। মিটিং পরে resume করা যাবে।</div>
+          </div>
+        </li>
+        <li>
+          <div class="req-num">২</div>
+          <div>
+            <div class="req-title">Model Selection Page</div>
+            <div class="req-desc">Admin থেকে Ollama এবং Gemini-র মডেল লিস্ট দেখা যাবে, একটি ডিফল্ট মডেল সিলেক্ট করা যাবে।</div>
+          </div>
+        </li>
+        <li>
+          <div class="req-num">৩</div>
+          <div>
+            <div class="req-title">Agent Persona Page</div>
+            <div class="req-desc">Admin থেকে agent-এর নাম, role, system prompt কাস্টমাইজ করা যাবে। ZombieCoder identity সব agent-এ shared থাকবে।</div>
+          </div>
+        </li>
+        <li>
+          <div class="req-num">৪</div>
+          <div>
+            <div class="req-title">Settings Page</div>
+            <div class="req-desc">AI Provider switch (Ollama/Gemini), audio settings, BD-context on/off, ইত্যাদি।</div>
+          </div>
+        </li>
+        <li>
+          <div class="req-num">৫</div>
+          <div>
+            <div class="req-title">Meeting UI — আধুনিক ডিজাইন</div>
+            <div class="req-desc">"ফিল মিটিং ফিল" — যে বলছে তার indicator জ্বলবে, বাংলা ভয়েস natural শোনাবে।</div>
+          </div>
+        </li>
+        <li>
+          <div class="req-num">৬</div>
+          <div>
+            <div class="req-title">বাংলাদেশ মার্কেট বেইজড বিশ্লেষণ</div>
+            <div class="req-desc">প্রতিটি agent-এর system prompt-এ BD-specific context থাকবে।</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ═══ SECTION 3: আমার মন্তব্য ═══ -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon" style="background:rgba(0,229,255,.12);">💬</div>
+      <h2>৩. আমার মন্তব্য (Technical Assessment)</h2>
+    </div>
+    <div class="card-body" style="display:flex;flex-direction:column;gap:1rem;">
+      <div class="comment-block">
+        <p><strong>Core architecture ঠিক আছে।</strong> Next.js + TypeScript + SQLite + WebSocket — এই stack টা solid। কিন্তু এটা এখন একটি single-page prototype, পূর্ণ product না।</p>
+        <p>Session management DB-তে আছে কিন্তু সেটা শুধু background-এ। UI-তে পুরানো meeting resume করার কোনো flow নেই — এটাই সবচেয়ে বড় গ্যাপ।</p>
+        <p>Ollama দিয়ে local model চালানো হচ্ছে, কিন্তু gemma2:2b বাংলায় দুর্বল। Gemini Flash API key কনফিগে আছে কিন্তু ব্যবহার হচ্ছে না — এটা activate করলে বাংলা quality নাটকীয়ভাবে বাড়বে।</p>
+        <p>বাংলা TTS-এর জন্য Browser Web Speech API যথেষ্ট না। Google TTS (বিনামূল্যে tier আছে) অথবা Coqui TTS (open-source, local) দিয়ে natural বাংলা voice সম্ভব।</p>
+      </div>
+      <div class="warn-box">
+        <div class="warn-icon">⚠️</div>
+        <div><strong>.env ফাইলে Gemini API Key সরাসরি লেখা আছে।</strong> এটা git-এ push হলে exposed হবে। .gitignore চেক করুন, API key rotate করা বিবেচনা করুন।</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SECTION 4: আমার সক্ষমতা ═══ -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon" style="background:rgba(249,115,22,.12);">⚡</div>
+      <h2>৪. আমি কী করতে পারব — সৎভাবে যা সম্ভব</h2>
+    </div>
+    <div class="card-body">
+      <div class="cap-grid">
+
+        <div class="cap-card">
+          <div class="cap-icon">✅</div>
+          <div class="cap-title">Meeting Resume System</div>
+          <div class="cap-body">Meeting list, past session দেখা, resume করা — পুরো flow DB থেকে UI পর্যন্ত build করতে পারব।</div>
+        </div>
+
+        <div class="cap-card">
+          <div class="cap-icon">✅</div>
+          <div class="cap-title">Model Selection Page</div>
+          <div class="cap-body">Ollama /api/tags থেকে model list fetch, Gemini model list hardcode, default model setter — সম্পূর্ণ করতে পারব।</div>
+        </div>
+
+        <div class="cap-card">
+          <div class="cap-icon">✅</div>
+          <div class="cap-title">Agent Persona Page</div>
+          <div class="cap-body">Agent add/edit/delete UI, system prompt editor, ZombieCoder shared identity inject — পুরোটা করতে পারব।</div>
+        </div>
+
+        <div class="cap-card">
+          <div class="cap-icon">✅</div>
+          <div class="cap-title">Settings Page</div>
+          <div class="cap-body">Provider switch, audio toggle, BD-context flag — সব settings একটা পেজে আনতে পারব।</div>
+        </div>
+
+        <div class="cap-card">
+          <div class="cap-icon">✅</div>
+          <div class="cap-title">Meeting UI ডিজাইন</div>
+          <div class="cap-body">Speaking indicator (glowing light), agent avatar animation, dark room feel — সম্পূর্ণ রিডিজাইন করতে পারব।</div>
+        </div>
+
+        <div class="cap-card">
+          <div class="cap-icon">✅</div>
+          <div class="cap-title">Gemini API Activation</div>
+          <div class="cap-body">বর্তমান Ollama provider-এর পাশে Gemini সম্পূর্ণ activate করতে পারব। বাংলা quality অনেক ভালো হবে।</div>
+        </div>
+
+        <div class="cap-card">
+          <div class="cap-icon">⚠️</div>
+          <div class="cap-title">বাংলা Natural Voice (TTS)</div>
+          <div class="cap-body">Google Cloud TTS (বিনামূল্যে tier) ইন্টিগ্রেশন করতে পারব। তবে 100% "বাংলাদেশি মানুষের মত" — এটা এখনকার free API-তে সীমিত।</div>
+        </div>
+
+        <div class="cap-card">
+          <div class="cap-icon">⚠️</div>
+          <div class="cap-title">Voice Input (STT)</div>
+          <div class="cap-body">Browser Web Speech API দিয়ে বাংলা speech-to-text সম্ভব কিন্তু accuracy কম। Production-এ Whisper local লাগবে।</div>
+        </div>
+
+        <div class="cap-card">
+          <div class="cap-icon">❌</div>
+          <div class="cap-title">IT Engineer ছাড়া Production Deploy</div>
+          <div class="cap-body">Local development সম্পূর্ণ করতে পারব। কিন্তু VPS/cloud production deploy, SSL, domain — এগুলো আপনার infrastructure সিদ্ধান্ত।</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SECTION 5: Industry Best কীভাবে হবে ═══ -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon" style="background:rgba(16,185,129,.12);">🏆</div>
+      <h2>৫. Industry Best করার রোডম্যাপ — সৎ পরামর্শ</h2>
+    </div>
+    <div class="card-body">
+      <table class="feature-table">
+        <thead>
+          <tr>
+            <th>ধাপ</th>
+            <th>কাজ</th>
+            <th>Priority</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Phase 1</strong></td>
+            <td>Meeting resume, Model page, Persona page, Settings page</td>
+            <td><span class="badge badge-missing">🔴 এখনই</span></td>
+          </tr>
+          <tr>
+            <td><strong>Phase 2</strong></td>
+            <td>Gemini activate, BD context system prompt, Meeting UI redesign, Speaking indicator</td>
+            <td><span class="badge badge-partial">🟡 এরপর</span></td>
+          </tr>
+          <tr>
+            <td><strong>Phase 3</strong></td>
+            <td>Google TTS Bangla voice, Meeting export (PDF/MD), Analytics dashboard</td>
+            <td><span class="badge badge-done">🟢 পরে</span></td>
+          </tr>
+          <tr>
+            <td><strong>Phase 4</strong></td>
+            <td>Multi-user auth, VPS deploy, Whisper STT local, Mobile PWA</td>
+            <td><span class="badge badge-done">🟢 Future</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<footer>
+  রিপোর্ট তৈরি: <strong>Antigravity (Google DeepMind)</strong> — ZombieCoder AI Board Project-এর জন্য &nbsp;|&nbsp;
+  সততার নীতিতে: যা আছে তা বলা হয়েছে, যা নেই তা বলা হয়েছে, যা পারব তা বলা হয়েছে।
+</footer>
+
+</body>
+</html>

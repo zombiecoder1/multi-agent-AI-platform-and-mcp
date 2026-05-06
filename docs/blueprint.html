@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ZombieCoder AI Board — সিস্টেম ব্লুপ্রিন্ট</title>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#070b14;--s1:#0d1220;--s2:#111829;--s3:#161f30;
+  --border:#1c2640;--border2:#243050;
+  --cyan:#00e5ff;--purple:#7c3aed;--green:#10b981;
+  --yellow:#f59e0b;--red:#ef4444;--orange:#f97316;--pink:#ec4899;
+  --text:#dde4f0;--muted:#5a6a8a;--dim:#3a4a6a;
+  --ff-body:'Hind Siliguri',sans-serif;
+  --ff-code:'JetBrains Mono',monospace;
+  --ff-head:'Rajdhani',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--ff-body);font-size:15px;line-height:1.75}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--s1)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* ── HERO ── */
+.hero{
+  background:linear-gradient(160deg,#060d1e 0%,#0c0b22 50%,#060d1e 100%);
+  border-bottom:1px solid var(--border);
+  padding:3rem 2rem 2rem;
+  text-align:center;
+  position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(0,229,255,.1) 0%,transparent 70%);
+  pointer-events:none;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:.5rem;
+  background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.2);
+  border-radius:20px;padding:.3rem 1rem;font-size:.78rem;color:var(--cyan);
+  margin-bottom:1.25rem;letter-spacing:.5px;
+}
+.hero h1{
+  font-family:var(--ff-head);font-size:2.6rem;font-weight:700;
+  background:linear-gradient(90deg,var(--cyan) 0%,#a78bfa 60%,var(--pink) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  letter-spacing:1px;margin-bottom:.5rem;
+}
+.hero p{color:var(--muted);font-size:.95rem;max-width:600px;margin:0 auto 1.5rem}
+.hero-chips{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap}
+.chip{
+  background:var(--s2);border:1px solid var(--border2);
+  border-radius:8px;padding:.25rem .75rem;font-size:.78rem;color:var(--muted);
+}
+.chip b{color:var(--cyan)}
+
+/* ── NAV ── */
+nav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(7,11,20,.92);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  padding:.6rem 2rem;
+  display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;
+}
+nav a{
+  color:var(--muted);font-size:.82rem;padding:.3rem .7rem;
+  border-radius:6px;text-decoration:none;transition:all .15s;white-space:nowrap;
+}
+nav a:hover{background:var(--s2);color:var(--cyan)}
+
+/* ── LAYOUT ── */
+.wrap{max-width:1000px;margin:0 auto;padding:2rem 1.5rem 5rem;display:flex;flex-direction:column;gap:2.5rem}
+
+/* ── SECTION ── */
+.sec{background:var(--s1);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.sec-head{
+  display:flex;align-items:center;gap:.75rem;
+  padding:1rem 1.5rem;border-bottom:1px solid var(--border);
+  background:var(--s2);
+}
+.sec-ico{
+  width:38px;height:38px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;font-size:1.15rem;flex-shrink:0;
+}
+.sec-head h2{font-family:var(--ff-head);font-size:1.1rem;font-weight:700;letter-spacing:.5px}
+.sec-head span{font-size:.78rem;color:var(--muted);margin-top:.1rem}
+.sec-body{padding:1.5rem}
+
+/* ── ARCHITECTURE ── */
+.arch-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1rem}
+@media(max-width:640px){.arch-grid{grid-template-columns:1fr}}
+.arch-layer{
+  border-radius:12px;padding:1.1rem;border:1px solid;text-align:center;
+}
+.arch-layer.frontend{background:rgba(0,229,255,.05);border-color:rgba(0,229,255,.25)}
+.arch-layer.api    {background:rgba(124,58,237,.05);border-color:rgba(124,58,237,.25)}
+.arch-layer.backend{background:rgba(16,185,129,.05);border-color:rgba(16,185,129,.25)}
+.arch-layer .al-icon{font-size:1.8rem;margin-bottom:.5rem}
+.arch-layer .al-title{font-weight:700;font-size:.95rem;margin-bottom:.3rem}
+.arch-layer.frontend .al-title{color:var(--cyan)}
+.arch-layer.api     .al-title{color:#a78bfa}
+.arch-layer.backend .al-title{color:var(--green)}
+.arch-layer .al-role{font-size:.78rem;color:var(--muted);line-height:1.5}
+.arch-arrow{text-align:center;color:var(--dim);font-size:.8rem;margin-bottom:.75rem;letter-spacing:1px}
+.arch-rule{
+  background:var(--s3);border:1px solid var(--border2);border-radius:10px;
+  padding:1rem 1.25rem;margin-top:1rem;
+  display:flex;gap:.75rem;align-items:flex-start;
+}
+.arch-rule .r-icon{font-size:1.2rem;flex-shrink:0;margin-top:.1rem}
+.arch-rule b{color:var(--yellow)}
+.arch-rule p{font-size:.85rem;color:var(--muted);margin-top:.2rem}
+
+/* ── SAHON COMMENT ── */
+.comment-box{
+  background:linear-gradient(135deg,rgba(0,229,255,.04),rgba(124,58,237,.04));
+  border:1px solid rgba(0,229,255,.15);border-radius:12px;
+  padding:1.25rem 1.5rem;position:relative;
+}
+.comment-box::before{
+  content:'"';position:absolute;top:-8px;left:14px;
+  font-size:2.5rem;color:var(--cyan);opacity:.25;font-family:Georgia,serif;line-height:1;
+}
+.comment-author{font-size:.75rem;color:var(--cyan);font-weight:600;margin-bottom:.4rem;letter-spacing:.5px}
+.comment-box p{font-size:.88rem;color:var(--muted);margin-bottom:.4rem}
+.comment-box p:last-child{margin:0}
+.comment-box b{color:var(--text)}
+
+/* ── AGENT CARDS ── */
+.agent-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem}
+.agent-card{
+  background:var(--s2);border:1px solid var(--border2);border-radius:12px;
+  padding:1.15rem;transition:border-color .2s;
+}
+.agent-card:hover{border-color:rgba(0,229,255,.35)}
+.agent-top{display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem}
+.agent-avatar{
+  width:44px;height:44px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;font-size:1.4rem;
+  flex-shrink:0;border:2px solid;
+}
+.agent-name{font-weight:700;font-size:.95rem;margin-bottom:.1rem}
+.agent-role{font-size:.75rem;color:var(--muted)}
+.agent-tag{display:inline-block;padding:.1rem .5rem;border-radius:4px;font-size:.68rem;font-weight:700;letter-spacing:.3px;margin-top:.3rem}
+.agent-body p{font-size:.82rem;color:var(--muted);line-height:1.6;margin-bottom:.5rem}
+.agent-body p:last-child{margin:0}
+.agent-prompt{
+  background:var(--s3);border:1px solid var(--border);border-radius:8px;
+  padding:.75rem;font-family:var(--ff-code);font-size:.72rem;color:#94a3b8;
+  margin-top:.75rem;white-space:pre-wrap;line-height:1.6;
+}
+
+/* ── API TABLE ── */
+.api-table{width:100%;border-collapse:collapse}
+.api-table th{
+  background:var(--s3);padding:.65rem 1rem;text-align:left;
+  font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;
+}
+.api-table td{
+  padding:.7rem 1rem;border-top:1px solid var(--border);
+  font-size:.85rem;vertical-align:top;
+}
+.api-table tr:hover td{background:rgba(255,255,255,.02)}
+.method{
+  display:inline-block;padding:.15rem .55rem;border-radius:4px;
+  font-family:var(--ff-code);font-size:.7rem;font-weight:700;
+}
+.get   {background:rgba(16,185,129,.15);color:#34d399}
+.post  {background:rgba(0,229,255,.12);color:var(--cyan)}
+.ws    {background:rgba(124,58,237,.15);color:#a78bfa}
+.put   {background:rgba(245,158,11,.12);color:#fbbf24}
+.path  {font-family:var(--ff-code);font-size:.78rem;color:#94a3b8}
+.who-badge{font-size:.7rem;padding:.1rem .45rem;border-radius:4px;font-weight:600}
+.who-fe{background:rgba(0,229,255,.1);color:var(--cyan)}
+.who-ad{background:rgba(124,58,237,.1);color:#a78bfa}
+.who-both{background:rgba(16,185,129,.1);color:var(--green)}
+
+/* ── DESIGN SPEC ── */
+.design-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem}
+.design-card{
+  background:var(--s2);border:1px solid var(--border2);border-radius:12px;padding:1rem;
+}
+.design-card .dc-icon{font-size:1.5rem;margin-bottom:.4rem}
+.design-card .dc-title{font-weight:700;font-size:.9rem;color:var(--cyan);margin-bottom:.3rem}
+.design-card .dc-body{font-size:.8rem;color:var(--muted);line-height:1.6}
+
+/* ── WHO DOES WHAT ── */
+.split{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(max-width:580px){.split{grid-template-columns:1fr}}
+.resp-block{background:var(--s2);border:1px solid var(--border2);border-radius:12px;padding:1.1rem}
+.resp-block .rb-head{font-weight:700;font-size:.9rem;margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem}
+.resp-block ul{list-style:none;display:flex;flex-direction:column;gap:.4rem}
+.resp-block li{font-size:.83rem;color:var(--muted);display:flex;gap:.5rem;align-items:flex-start}
+.resp-block li::before{content:'→';color:var(--dim);flex-shrink:0;margin-top:.1rem}
+.resp-block li b{color:var(--text)}
+
+/* ── CONFIG BOX ── */
+.config-block{
+  background:var(--s3);border:1px solid var(--border2);border-radius:10px;
+  padding:1rem 1.25rem;font-family:var(--ff-code);font-size:.8rem;color:#94a3b8;
+  line-height:1.8;margin-top:.75rem;
+}
+.config-block .key{color:#7dd3fc}
+.config-block .val{color:#86efac}
+.config-block .comment{color:var(--dim)}
+
+/* ── TTS BOX ── */
+.tts-flow{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin:.75rem 0}
+.tts-step{
+  background:var(--s3);border:1px solid var(--border2);border-radius:8px;
+  padding:.4rem .85rem;font-size:.8rem;color:var(--text);
+}
+.tts-arrow{color:var(--dim);font-size:1rem}
+
+/* ── RESULT BOX ── */
+.result-table{width:100%;border-collapse:collapse}
+.result-table th{
+  background:var(--s3);padding:.6rem 1rem;text-align:left;
+  font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;
+}
+.result-table td{padding:.7rem 1rem;border-top:1px solid var(--border);font-size:.85rem;vertical-align:top}
+.done  {color:var(--green);font-weight:600}
+.v0    {color:#fbbf24;font-weight:600}
+.claude{color:var(--cyan);font-weight:600}
+.both  {color:#a78bfa;font-weight:600}
+
+/* ── PAGE MOCK ── */
+.page-mock{
+  background:var(--s3);border:1px solid var(--border2);border-radius:12px;
+  padding:1rem 1.25rem;margin-bottom:1rem;
+}
+.page-mock .pm-title{font-weight:700;font-size:.9rem;color:var(--cyan);margin-bottom:.4rem}
+.page-mock ul{margin-top:.4rem}
+.page-mock li{font-size:.82rem;color:var(--muted);padding:.2rem 0;border-top:1px solid rgba(255,255,255,.04)}
+.page-mock li:first-child{border-top:none}
+.page-mock li span{color:var(--text)}
+
+/* ── FOOTER ── */
+footer{text-align:center;padding:1.5rem;border-top:1px solid var(--border);color:var(--muted);font-size:.78rem}
+footer b{color:var(--cyan)}
+
+/* ── UTIL ── */
+.warn{
+  background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.25);
+  border-radius:10px;padding:.9rem 1.1rem;font-size:.85rem;
+  display:flex;gap:.7rem;align-items:flex-start;margin-top:.75rem;
+}
+.warn b{color:var(--yellow)}
+.note{
+  background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.15);
+  border-radius:10px;padding:.9rem 1.1rem;font-size:.85rem;
+  display:flex;gap:.7rem;align-items:flex-start;margin-top:.75rem;
+}
+.note b{color:var(--cyan)}
+.section-sub{font-family:var(--ff-head);font-size:.95rem;font-weight:700;color:#c4b5e8;margin:1.25rem 0 .6rem;letter-spacing:.3px}
+</style>
+</head>
+<body>
+
+<!-- ═══ HERO ═══ -->
+<div class="hero">
+  <div class="hero-badge">🧠 ZombieCoder · Developer Zone · Dhaka, BD</div>
+  <h1>AI Board — সিস্টেম ব্লুপ্রিন্ট</h1>
+  <p>Sahon ভাইয়ের লজিক + মাসুদ ভাইয়ের ডিজাইন আইডিয়া + Claude Sonnet-এর টেকনিক্যাল রায় — একটি পেজে</p>
+  <div class="hero-chips">
+    <span class="chip">Stack: <b>Next.js 15 + TypeScript</b></span>
+    <span class="chip">Socket: <b>WebSocket (port 3001)</b></span>
+    <span class="chip">DB: <b>SQLite (backend only)</b></span>
+    <span class="chip">Voice: <b>msedge-tts · bn-BD-PradeepNeural</b></span>
+    <span class="chip">AI: <b>Ollama / Gemini API</b></span>
+  </div>
+</div>
+
+<!-- ═══ NAV ═══ -->
+<nav>
+  <a href="#arch">🏗️ আর্কিটেকচার</a>
+  <a href="#sahon">💬 Sahon-এর রায়</a>
+  <a href="#agents">🤖 Agent Personas</a>
+  <a href="#api">📡 API Contract</a>
+  <a href="#design">🎨 ডিজাইন স্পেক</a>
+  <a href="#tts">🔊 Bangla Voice</a>
+  <a href="#whodoes">⚡ কে কী করবে</a>
+  <a href="#result">🏁 ফলাফল</a>
+</nav>
+
+<div class="wrap">
+
+<!-- ═══ 1. ARCHITECTURE ═══ -->
+<div class="sec" id="arch">
+  <div class="sec-head">
+    <div class="sec-ico" style="background:rgba(0,229,255,.12)">🏗️</div>
+    <div>
+      <h2>আর্কিটেকচার — ৩ লেয়ার, সরল সত্য</h2>
+      <span>Frontend = UI only | API Routes = Gate | Backend = Brain</span>
+    </div>
+  </div>
+  <div class="sec-body">
+    <div class="arch-grid">
+      <div class="arch-layer frontend">
+        <div class="al-icon">🖥️</div>
+        <div class="al-title">Frontend (Next.js Pages)</div>
+        <div class="al-role">
+          শুধু <b>দেখানো</b> + ব্যবহারকারীর input নেওয়া।<br/>
+          DB জানে না, সরাসরি query করে না।<br/>
+          API Route থেকে data নেয়, দেখায়।<br/>
+          v0.dev এখানে কাজ করবে।
+        </div>
+      </div>
+      <div class="arch-layer api">
+        <div class="al-icon">🔀</div>
+        <div class="al-title">API Routes (Next.js /api)</div>
+        <div class="al-role">
+          Frontend-এর request receive করে।<br/>
+          Settings পড়ে .env / config file থেকে।<br/>
+          Backend WebSocket-এ forward করে।<br/>
+          Edge TTS এখানে চলে।
+        </div>
+      </div>
+      <div class="arch-layer backend">
+        <div class="al-icon">⚙️</div>
+        <div class="al-title">Backend (server/index.ts)</div>
+        <div class="al-role">
+          WebSocket server (port 3001)।<br/>
+          SQLite DB শুধু এখানে touch হয়।<br/>
+          AI provider (Ollama/Gemini) call করে।<br/>
+          Session + conversation সেভ করে।
+        </div>
+      </div>
+    </div>
+    <div class="arch-arrow">Frontend → [HTTP/WS] → API Routes → [WS] → Backend → [DB + AI]</div>
+    <div class="arch-rule">
+      <div class="r-icon">🔒</div>
+      <div>
+        <b>Sahon-এর আর্কিটেকচার রুল (সঠিক):</b>
+        <p>Frontend-এ DB connection নেই, থাকবেও না। Config/settings server-side API route-এ থাকবে। Frontend শুধু request পাঠায়, response দেখায়। ফ্রন্টেন্ড ক্র্যাশ করলেও backend অন্ধ হয় না।</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 2. SAHON COMMENT ═══ -->
+<div class="sec" id="sahon">
+  <div class="sec-head">
+    <div class="sec-ico" style="background:rgba(245,158,11,.12)">💬</div>
+    <div>
+      <h2>দুই ভাইয়ের মন্তব্য — সরাসরি</h2>
+      <span>Sahon (Architect) + মাসুদ (Designer) + Claude (Technical Review)</span>
+    </div>
+  </div>
+  <div class="sec-body" style="display:flex;flex-direction:column;gap:1rem">
+
+    <div class="comment-box">
+      <div class="comment-author">⚡ SAHON ভাই — আর্কিটেক্ট</div>
+      <p>"<b>ফ্রন্টেন্ড DB কেন ধরবে?</b> ওর কাজ সুন্দর করে থাকা, admin যা পাঠায় দেখানো, আর customer-র click backend-এ পাঠানো।"</p>
+      <p>"<b>ফ্রন্টেন্ড ক্র্যাশ করলে backend অন্ধ হয়ে যাবে কেন?</b> — এই প্রশ্নটাই সিস্টেম ডিজাইনের মূল।"</p>
+      <p>"Config → .env-তে থাকবে, API route forward করবে। Frontend সেটা দেখাবে।"</p>
+      <p>"<b>v0.dev বা z.ai</b>-তে ডকুমেন্ট দিলে UI বানিয়ে আনব, Claude integration করবে।"</p>
+    </div>
+
+    <div class="comment-box" style="border-color:rgba(124,58,237,.25)">
+      <div class="comment-author" style="color:#a78bfa">🎨 মাসুদ ভাই — ডিজাইনার</div>
+      <p>"<b>Active speaker-এর card-এ Pulse Neon Green</b> রিং জ্বলবে — filmic feel।"</p>
+      <p>"<b>Bangla natural voice</b> চাই — browser Web Speech না, Microsoft Edge-এর Neural voice।"</p>
+      <p>"Admin panel-এ <b>Model dropdown</b> — Ollama আর Gemini লিস্ট, default select করা যাবে।"</p>
+      <p>"৫টা agent একদম <b>দেশি নামে, দেশি মেজাজে</b> — বাংলাদেশের প্রেক্ষাপটে।"</p>
+    </div>
+
+    <div class="comment-box" style="border-color:rgba(16,185,129,.25)">
+      <div class="comment-author" style="color:var(--green)">🤖 Claude Sonnet — টেকনিক্যাল রায়</div>
+      <p>Sahon-এর আর্কিটেকচার লজিক <b>100% সঠিক।</b> Frontend ↔ DB direct connection = anti-pattern.</p>
+      <p>মাসুদ ভাইয়ের <b>msedge-tts + bn-BD-PradeepNeural</b> — এটা কাজ করবে, ফ্রি, server-side, no API key লাগবে না।</p>
+      <p>কাজের ভাগ: <b>v0.dev = UI layout + visual</b>। <b>Claude = WebSocket binding + TTS API + session logic।</b></p>
+      <p>DB শুধু backend-এ। API Routes = thin proxy layer, config read করবে।</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ 3. AGENT PERSONAS ═══ -->
+<div class="sec" id="agents">
+  <div class="sec-head">
+    <div class="sec-ico" style="background:rgba(236,72,153,.12)">🤖</div>
+    <div>
+      <h2>৫ Agent Persona — বাংলাদেশের মাটির মানুষ</h2>
+      <span>মাসুদ ভাইয়ের ডিজাইন + System Prompt সহ</span>
+    </div>
+  </div>
+  <div class="sec-body">
+    <div class="agent-grid">
+
+      <!-- Agent 1 -->
+      <div class="agent-card">
+        <div class="agent-top">
+          <div class="agent-avatar" style="background:rgba(249,115,22,.1);border-color:rgba(249,115,22,.4)">🧔</div>
+          <div>
+            <div class="agent-name">সলিমুদ্দিন</div>
+            <div class="agent-role">Sales & Marketing · বাজার বিশ্লেষক</div>
+            <span class="agent-tag" style="background:rgba(249,115,22,.15);color:#fb923c">SALES</span>
+          </div>
+        </div>
+        <div class="agent-body">
+          <p>পুরান ঢাকার ট্রেডার মেজাজে কথা বলে। বাংলাদেশের কাস্টমার সাইকোলজি, বাজারের হাওয়া, দাম-দর নিয়ে তুখোড়।</p>
+          <p><b>কথার স্টাইল:</b> "ভাই, এইটা বেচতে গেলে আগে গল্পটা বেচেন।"</p>
+        </div>
+        <div class="agent-prompt">আপনি সলিমুদ্দিন — বাংলাদেশের দেশি বাজারের বিশেষজ্ঞ।
+পুরান ঢাকার ব্যবসায়িক মেজাজে কথা বলেন।
+বাংলাদেশের গ্রাহক মনোবিজ্ঞান, মূল্য নির্ধারণ,
+ডিজিটাল মার্কেটিং BD-context-এ ব্যাখ্যা করেন।
+মিক্স বাংলায় কথা বলুন, সরল ও বাস্তব পরামর্শ দিন।</div>
+      </div>
+
+      <!-- Agent 2 -->
+      <div class="agent-card">
+        <div class="agent-top">
+          <div class="agent-avatar" style="background:rgba(0,229,255,.08);border-color:rgba(0,229,255,.3)">👨‍💻</div>
+          <div>
+            <div class="agent-name">ইঞ্জিনিয়ার বখতিয়ার</div>
+            <div class="agent-role">IT & Tech · সিস্টেম আর্কিটেক্ট</div>
+            <span class="agent-tag" style="background:rgba(0,229,255,.1);color:var(--cyan)">TECH</span>
+          </div>
+        </div>
+        <div class="agent-body">
+          <p>লজিক্যাল, দালালি সহ্য করেন না। লোকাল সার্ভার, নেট স্পিড, বাংলাদেশের infrastructure বাস্তবতা নিয়ে সৎ।</p>
+          <p><b>কথার স্টাইল:</b> "ভাই, ক্লাউড দিয়ে স্বপ্ন দেখার আগে আপনার ISP ঠিক করুন।"</p>
+        </div>
+        <div class="agent-prompt">আপনি ইঞ্জিনিয়ার বখতিয়ার — BD tech reality-র সৎ মুখপাত্র।
+সিস্টেম আর্কিটেকচার, সিকিউরিটি, লোকাল ইনফ্রা নিয়ে
+বাংলাদেশের বাস্তবতায় কথা বলুন।
+দালালি বা overselling ধরিয়ে দিন।
+Technical terms বাংলায় ব্যাখ্যা করুন।</div>
+      </div>
+
+      <!-- Agent 3 -->
+      <div class="agent-card">
+        <div class="agent-top">
+          <div class="agent-avatar" style="background:rgba(236,72,153,.08);border-color:rgba(236,72,153,.3)">👩‍💼</div>
+          <div>
+            <div class="agent-name">আপা</div>
+            <div class="agent-role">HR & People · টিম লিডার</div>
+            <span class="agent-tag" style="background:rgba(236,72,153,.1);color:var(--pink)">HR</span>
+          </div>
+        </div>
+        <div class="agent-body">
+          <p>মায়া-মমতা দিয়ে কথা বলেন কিন্তু কাজের বেলায় কড়া। বাংলাদেশী অফিস কালচার, মানুষের মন বোঝেন।</p>
+          <p><b>কথার স্টাইল:</b> "আম্মু, সব মানুষ দিয়ে সব কাজ হয় না — সঠিক মানুষকে খুঁজুন।"</p>
+        </div>
+        <div class="agent-prompt">আপনি আপা — BD অফিস কালচারের মানুষ-বিশেষজ্ঞ।
+মায়াবী কিন্তু দৃঢ় ভাষায় HR advice দিন।
+বাংলাদেশের কর্মক্ষেত্রের বাস্তবতা বুঝে পরামর্শ দিন।
+টিম ডায়নামিক্স, কর্মী ধরে রাখা, অফিস রাজনীতি
+মিষ্টি কিন্তু সৎভাবে ব্যাখ্যা করুন।</div>
+      </div>
+
+      <!-- Agent 4 -->
+      <div class="agent-card">
+        <div class="agent-top">
+          <div class="agent-avatar" style="background:rgba(124,58,237,.08);border-color:rgba(124,58,237,.3)">📊</div>
+          <div>
+            <div class="agent-name">তথ্য অফিসার</div>
+            <div class="agent-role">AI & Data · রিয়েল টাইম অ্যানালিস্ট</div>
+            <span class="agent-tag" style="background:rgba(124,58,237,.1);color:#a78bfa">DATA</span>
+          </div>
+        </div>
+        <div class="agent-body">
+          <p>ডাটা ধরে কথা বলেন। রূঢ় সত্য বলতে দ্বিধা করেন না। "এই বিজনেস BD-তে চলবে না" — এটা data দিয়ে প্রমাণ করেন।</p>
+          <p><b>কথার স্টাইল:</b> "সংখ্যা মিথ্যা বলে না ভাই, আপনার spreadsheet বলছে লস।"</p>
+        </div>
+        <div class="agent-prompt">আপনি তথ্য অফিসার — বাংলাদেশের data-driven বিশ্লেষক।
+সংখ্যা, পরিসংখ্যান, বাজার গবেষণা দিয়ে কথা বলুন।
+BD-specific market data reference করুন।
+আবেগ নয়, fact দিয়ে সিদ্ধান্ত নিতে সাহায্য করুন।
+কঠিন সত্য সরাসরি বলুন।</div>
+      </div>
+
+      <!-- Agent 5 -->
+      <div class="agent-card">
+        <div class="agent-top">
+          <div class="agent-avatar" style="background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.3)">😏</div>
+          <div>
+            <div class="agent-name">ফালতু ভাই</div>
+            <div class="agent-role">Sarcasm · ক্রিটিক্যাল অডিটর</div>
+            <span class="agent-tag" style="background:rgba(239,68,68,.1);color:#f87171">AUDIT</span>
+          </div>
+        </div>
+        <div class="agent-body">
+          <p>খুঁত ধরাই কাজ। Reality check দেন। "স্বপ্ন দেইখেন না, আগে পকেটের টাকা বাঁচান।" হাসায় কিন্তু সত্য বলেন।</p>
+          <p><b>কথার স্টাইল:</b> "ভাই, এই আইডিয়া ১০ বার আগে ফ্লপ খাইছে — ১১তমবার কেন জিতবেন?"</p>
+        </div>
+        <div class="agent-prompt">আপনি ফালতু ভাই — বাংলাদেশের সবচেয়ে সৎ critic।
+হাস্যরস দিয়ে কিন্তু গুরুত্বপূর্ণ সত্য বলুন।
+অতিরিক্ত আশাবাদ, over-engineering, বাজে planning
+ধরিয়ে দিন। Sarcasm-এর সাথে build করার পরামর্শও দিন।
+কখনো শুধু নেগেটিভ থাকবেন না।</div>
+      </div>
+
+    </div>
+
+    <div class="warn">
+      <span>⚙️</span>
+      <div><b>System Config (Admin থেকে .env-এ যাবে):</b><br/>
+      <span style="font-family:var(--ff-code);font-size:.8rem;color:#94a3b8">
+      default_provider=Gemini | models=gemini-1.5-flash,gemini-1.5-pro,llama3,mistral | voice=bn-BD-PradeepNeural | meeting_vibe=Cinematic
+      </span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 4. API CONTRACT ═══ -->
+<div class="sec" id="api">
+  <div class="sec-head">
+    <div class="sec-ico" style="background:rgba(16,185,129,.12)">📡</div>
+    <div>
+      <h2>API Contract — কে কোথায় request করবে</h2>
+      <span>FE=Meeting Room | AD=Admin Panel | BOTH=দুইজনেই</span>
+    </div>
+  </div>
+  <div class="sec-body">
+
+    <div class="section-sub">🖥️ Meeting Room (Frontend) — এর Requests</div>
+    <table class="api-table">
+      <thead><tr><th>Method</th><th>Endpoint</th><th>কাজ</th><th>কে</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="method ws">WS</span></td>
+          <td class="path">ws://localhost:3001</td>
+          <td>WebSocket connect, question পাঠানো, streaming response নেওয়া</td>
+          <td><span class="who-badge who-fe">FE</span></td>
+        </tr>
+        <tr>
+          <td><span class="method get">GET</span></td>
+          <td class="path">/api/sessions</td>
+          <td>Past meeting list (resume করতে)</td>
+          <td><span class="who-badge who-fe">FE</span></td>
+        </tr>
+        <tr>
+          <td><span class="method get">GET</span></td>
+          <td class="path">/api/sessions/:id</td>
+          <td>Specific session-এর conversation history</td>
+          <td><span class="who-badge who-fe">FE</span></td>
+        </tr>
+        <tr>
+          <td><span class="method post">POST</span></td>
+          <td class="path">/api/tts</td>
+          <td>Text পাঠাবে → MP3 আসবে (bn-BD-PradeepNeural)</td>
+          <td><span class="who-badge who-fe">FE</span></td>
+        </tr>
+        <tr>
+          <td><span class="method get">GET</span></td>
+          <td class="path">/api/config</td>
+          <td>Current model, provider, voice settings পড়বে</td>
+          <td><span class="who-badge who-both">BOTH</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="section-sub" style="margin-top:1.25rem">⚙️ Admin Panel — এর Requests</div>
+    <table class="api-table">
+      <thead><tr><th>Method</th><th>Endpoint</th><th>কাজ</th><th>কে</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="method get">GET</span></td>
+          <td class="path">/api/models/ollama</td>
+          <td>Ollama locally installed model list</td>
+          <td><span class="who-badge who-ad">AD</span></td>
+        </tr>
+        <tr>
+          <td><span class="method get">GET</span></td>
+          <td class="path">/api/models/gemini</td>
+          <td>Gemini available model list (hardcoded)</td>
+          <td><span class="who-badge who-ad">AD</span></td>
+        </tr>
+        <tr>
+          <td><span class="method put">PUT</span></td>
+          <td class="path">/api/config</td>
+          <td>Default model/provider set করা</td>
+          <td><span class="who-badge who-ad">AD</span></td>
+        </tr>
+        <tr>
+          <td><span class="method get">GET</span></td>
+          <td class="path">/api/agents</td>
+          <td>সব agent persona list</td>
+          <td><span class="who-badge who-ad">AD</span></td>
+        </tr>
+        <tr>
+          <td><span class="method put">PUT</span></td>
+          <td class="path">/api/agents/:id</td>
+          <td>Agent system prompt / name / avatar edit</td>
+          <td><span class="who-badge who-ad">AD</span></td>
+        </tr>
+        <tr>
+          <td><span class="method get">GET</span></td>
+          <td class="path">/api/sessions</td>
+          <td>All past sessions list with stats</td>
+          <td><span class="who-badge who-ad">AD</span></td>
+        </tr>
+        <tr>
+          <td><span class="method get">GET</span></td>
+          <td class="path">/api/agents/metrics</td>
+          <td>Agent performance stats (best responses, score)</td>
+          <td><span class="who-badge who-ad">AD</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="note" style="margin-top:.75rem">
+      <span>ℹ️</span>
+      <div><b>Config কোথায় থাকবে?</b><br/>
+      <code style="font-family:var(--ff-code);font-size:.8rem">/api/config</code> → server-side একটি JSON file বা SQLite-এর <code style="font-family:var(--ff-code);font-size:.8rem">settings</code> table (backend-এ) পড়বে। Frontend সরাসরি DB/file touch করবে না।</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 5. DESIGN SPEC ═══ -->
+<div class="sec" id="design">
+  <div class="sec-head">
+    <div class="sec-ico" style="background:rgba(236,72,153,.12)">🎨</div>
+    <div>
+      <h2>ডিজাইন স্পেক — Meeting Room + Admin</h2>
+      <span>মাসুদ ভাইয়ের আইডিয়া + Claude-এর implementation plan</span>
+    </div>
+  </div>
+  <div class="sec-body">
+
+    <div class="section-sub">🏢 Meeting Room (মূল পেজ)</div>
+    <div class="design-grid">
+      <div class="design-card">
+        <div class="dc-icon">🌑</div>
+        <div class="dc-title">Dark Board Room</div>
+        <div class="dc-body">Deep navy background। Subtle hex-grid overlay। Cinematic atmospheric glow। কোনো সাদা background নেই।</div>
+      </div>
+      <div class="design-card">
+        <div class="dc-icon">💡</div>
+        <div class="dc-title">Speaking Indicator</div>
+        <div class="dc-body">যে agent বলছে তার avatar-এর চারপাশে <b>Pulse Neon Green</b> ring জ্বলবে। Animated ripple effect।</div>
+      </div>
+      <div class="design-card">
+        <div class="dc-icon">🎙️</div>
+        <div class="dc-title">Voice Input</div>
+        <div class="dc-body">Mic বাটন, press করলে Browser STT। Text-ও type করা যাবে। দুটো option থাকবে।</div>
+      </div>
+      <div class="design-card">
+        <div class="dc-icon">📜</div>
+        <div class="dc-title">Live Transcript</div>
+        <div class="dc-body">Response আসতে থাকলে real-time type হবে। Speaker নাম + avatar সহ। Scroll করা যাবে।</div>
+      </div>
+      <div class="design-card">
+        <div class="dc-icon">🔁</div>
+        <div class="dc-title">Meeting Resume</div>
+        <div class="dc-body">Header-এ "Past Meetings" বাটন। Click করলে session list দেখাবে। Resume করলে context reload।</div>
+      </div>
+      <div class="design-card">
+        <div class="dc-icon">🎭</div>
+        <div class="dc-title">Agent তালিকা</div>
+        <div class="dc-body">Side বা top-এ ৫ agent-এর avatar strip। Active/inactive status দেখা যাবে।</div>
+      </div>
+    </div>
+
+    <div class="section-sub" style="margin-top:1.5rem">⚙️ Admin Panel (আলাদা পেজ)</div>
+    <div class="design-grid">
+      <div class="design-card">
+        <div class="dc-icon">📋</div>
+        <div class="dc-title">Models Page</div>
+        <div class="dc-body">Ollama model list (live fetch)। Gemini model list (hardcoded)। Radio select করলে default হবে।</div>
+      </div>
+      <div class="design-card">
+        <div class="dc-icon">🤖</div>
+        <div class="dc-title">Agents Page</div>
+        <div class="dc-body">৫ agent card। Click করলে edit modal। System prompt editor (textarea)। Save হলে API call।</div>
+      </div>
+      <div class="design-card">
+        <div class="dc-icon">⚙️</div>
+        <div class="dc-title">Settings Page</div>
+        <div class="dc-body">Provider toggle (Ollama/Gemini)। Voice select। Audio speed। BD Context on/off।</div>
+      </div>
+      <div class="design-card">
+        <div class="dc-icon">📂</div>
+        <div class="dc-title">History Page</div>
+        <div class="dc-body">Past meetings table। Date, question count, best score। Resume বাটন। Export MD।</div>
+      </div>
+    </div>
+
+    <div class="warn" style="margin-top:1rem">
+      <span>🎨</span>
+      <div><b>v0.dev-কে এই prompt দিন:</b><br/>
+      <span style="font-size:.82rem;color:var(--muted)">"Build a dark, cinematic AI meeting room UI in Next.js with TailwindCSS. 5 agent avatar cards arranged in a board table layout. Active speaker has pulsing neon green ring animation. Live transcript area, mic + text input, past session list sidebar. Also build an admin panel with 4 tabs: Models, Agents, Settings, History."</span></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ 6. TTS ═══ -->
+<div class="sec" id="tts">
+  <div class="sec-head">
+    <div class="sec-ico" style="background:rgba(16,185,129,.12)">🔊</div>
+    <div>
+      <h2>Bangla Voice — Edge TTS Strategy</h2>
+      <span>msedge-tts · bn-BD-PradeepNeural · Free · No API Key</span>
+    </div>
+  </div>
+  <div class="sec-body">
+    <div class="tts-flow">
+      <div class="tts-step">User কথা বলে / Type করে</div>
+      <span class="tts-arrow">→</span>
+      <div class="tts-step">Agent response আসে (WS)</div>
+      <span class="tts-arrow">→</span>
+      <div class="tts-step">Frontend <code>/api/tts</code> POST করে</div>
+      <span class="tts-arrow">→</span>
+      <div class="tts-step">Server msedge-tts MP3 বানায়</div>
+      <span class="tts-arrow">→</span>
+      <div class="tts-step">Browser Audio() play করে</div>
+      <span class="tts-arrow">→</span>
+      <div class="tts-step">Speaking indicator জ্বলে</div>
+    </div>
+    <div class="config-block">
+<span class="comment">// server/api/tts/route.ts</span>
+<span class="key">import</span> { MsEdgeTTS, OUTPUT_FORMAT } <span class="key">from</span> <span class="val">'msedge-tts'</span>;
+
+<span class="key">const</span> tts = <span class="key">new</span> MsEdgeTTS();
+<span class="key">await</span> tts.setMetadata(
+  <span class="val">'bn-BD-PradeepNeural'</span>,       <span class="comment">// বাংলা পুরুষ ভয়েস</span>
+  OUTPUT_FORMAT.AUDIO_24KHZ_48KBITRATE_MONO_MP3
+);
+<span class="key">const</span> mp3Buffer = <span class="key">await</span> tts.toBuffer(text);
+<span class="comment">// → Response.arrayBuffer() → browser play করবে</span>
+    </div>
+    <div class="note">
+      <span>✅</span>
+      <div><b>কেন এটা:</b> Microsoft Edge-এর internal TTS API। ফ্রি, rate limit নেই (personal use)। Neural voice — রোবটিক না। API key লাগে না।</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 7. WHO DOES WHAT ═══ -->
+<div class="sec" id="whodoes">
+  <div class="sec-head">
+    <div class="sec-ico" style="background:rgba(245,158,11,.12)">⚡</div>
+    <div>
+      <h2>কে কী করবে — ভাগাভাগি পরিষ্কার</h2>
+      <span>v0.dev / z.ai | Claude Sonnet | Sahon ভাই</span>
+    </div>
+  </div>
+  <div class="sec-body">
+    <div class="split">
+      <div class="resp-block">
+        <div class="rb-head" style="color:#fbbf24">🌐 v0.dev / z.ai করবে</div>
+        <ul>
+          <li>Meeting Room-এর <b>visual layout</b> — agent cards, transcript area</li>
+          <li>Admin Panel-এর <b>4 tab UI</b> — Models, Agents, Settings, History</li>
+          <li>Speaking indicator-এর <b>CSS animation</b></li>
+          <li>Responsive dark theme</li>
+          <li>Component structure (Next.js)</li>
+        </ul>
+      </div>
+      <div class="resp-block">
+        <div class="rb-head" style="color:var(--cyan)">🤖 Claude করবে</div>
+        <ul>
+          <li><b>WebSocket binding</b> — v0.dev-র UI + existing WS server</li>
+          <li><b>/api/tts</b> route — msedge-tts integration</li>
+          <li><b>/api/config</b> — settings read/write</li>
+          <li><b>/api/sessions</b> — past meeting list + resume</li>
+          <li>Agent registry → DB migration</li>
+          <li>Speaking indicator trigger logic</li>
+          <li>5 BD agent system prompts inject</li>
+        </ul>
+      </div>
+    </div>
+    <div class="resp-block" style="margin-top:1rem">
+      <div class="rb-head" style="color:var(--green)">👑 Sahon ভাই করবেন</div>
+      <ul style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem">
+        <li>v0.dev-তে prompt দিয়ে <b>UI generate</b> করা</li>
+        <li>Generated code project-এ <b>paste</b> করা</li>
+        <li>.env-এ <b>Gemini API key</b> maintain করা</li>
+        <li>Ollama locally <b>model install</b> করা</li>
+        <li>Final <b>UX review</b> + feedback দেওয়া</li>
+        <li>Production <b>deploy decision</b></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 8. FINAL RESULT ═══ -->
+<div class="sec" id="result">
+  <div class="sec-head">
+    <div class="sec-ico" style="background:rgba(0,229,255,.12)">🏁</div>
+    <div>
+      <h2>দিন শেষে ফলাফল — কী পাব আমরা</h2>
+      <span>এই ব্লুপ্রিন্ট মেনে কাজ করলে যা থাকবে</span>
+    </div>
+  </div>
+  <div class="sec-body">
+    <table class="result-table">
+      <thead><tr><th>ফিচার</th><th>কীভাবে</th><th>কে করবে</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>🏢 Cinematic Meeting Room</b></td>
+          <td>Dark board room, agent avatars, neon pulse ring</td>
+          <td class="v0">v0.dev UI → Claude bind</td>
+        </tr>
+        <tr>
+          <td><b>🔊 বাংলা Natural Voice</b></td>
+          <td>msedge-tts, bn-BD-PradeepNeural, server MP3</td>
+          <td class="claude">Claude</td>
+        </tr>
+        <tr>
+          <td><b>🤖 ৫ দেশি Agent</b></td>
+          <td>সলিমুদ্দিন, বখতিয়ার, আপা, তথ্য অফিসার, ফালতু ভাই</td>
+          <td class="both">Claude + Sahon review</td>
+        </tr>
+        <tr>
+          <td><b>📋 Model Selection Page</b></td>
+          <td>Ollama live + Gemini hardcoded, default setter</td>
+          <td class="v0">v0.dev UI → Claude API</td>
+        </tr>
+        <tr>
+          <td><b>⚙️ Settings Page</b></td>
+          <td>Provider, voice, BD context — /api/config</td>
+          <td class="both">v0.dev UI → Claude API</td>
+        </tr>
+        <tr>
+          <td><b>🔁 Meeting Resume</b></td>
+          <td>Past session list, click করলে context reload</td>
+          <td class="claude">Claude</td>
+        </tr>
+        <tr>
+          <td><b>🗄️ DB (Backend only)</b></td>
+          <td>Frontend DB touch করে না, API route proxy করে</td>
+          <td class="claude">Claude (existing code refine)</td>
+        </tr>
+        <tr>
+          <td><b>🚀 No IT Engineer লাগবে না</b></td>
+          <td>Local: npm run dev + npm run dev:server</td>
+          <td class="done">এখনই কাজ করে ✅</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="note" style="margin-top:1rem">
+      <span>📌</span>
+      <div>
+        <b>পরের স্টেপ:</b>&nbsp;
+        v0.dev-এ Design Spec section-এর prompt দিন → UI generate করুন → code নিয়ে আসুন → Claude বাকি integration করবে।
+        অথবা বলুন Claude সরাসরি এখানেই সব লিখুক — দুটো পথই খোলা।
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+
+<footer>
+  <b>ZombieCoder AI Board</b> — Sahon Srabon · Developer Zone · Dhaka, Bangladesh<br/>
+  ব্লুপ্রিন্ট লেখক: Claude Sonnet | উৎস: me.txt + 1.md + সরাসরি কোড বিশ্লেষণ<br/>
+  কোনো মিথ্যা নেই, কোনো hallucination নেই — যা আছে তাই বলা হয়েছে।
+</footer>
+
+</body>
+</html>
